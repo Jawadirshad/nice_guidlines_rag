@@ -1,0 +1,233 @@
+# # version: '3.8'
+
+# # services:
+# #   streamlit_app:
+# #     build: .
+# #     ports:
+# #       - "8501:8501"
+# #     depends_on:
+# #       - pgvector_db
+# #     environment:
+# #       - DB_HOST=pgvector_db
+# #       - DB_PORT=5432
+# #       - DB_NAME=vector_db
+# #       - DB_USER=postgres
+# #       - DB_PASSWORD=test
+# #     volumes:
+# #       - .:/app
+# #     networks:
+# #       - app_network
+
+# #   pgvector_db:
+# #     container_name: pgvector_demo_local  # Use the existing container name
+# #     image: ankane/pgvector
+# #     restart: always
+# #     ports:
+# #       - "5432:5432"
+# #     environment:
+# #       POSTGRES_USER: postgres
+# #       POSTGRES_PASSWORD: test
+# #       POSTGRES_DB: vector_db
+# #     networks:
+# #       - app_network
+# #     volumes:
+# #       - pgvector_data:/var/lib/postgresql/data
+
+# # volumes:
+# #   pgvector_data:
+
+# # networks:
+# #   app_network:
+# #     driver: bridge
+
+# version: '3.8'
+
+# services:
+#   streamlit_app:
+#     build: .
+#     ports:
+#       - "8501:8501"
+#     environment:
+#       - DB_HOST=pgvector_demo_local  # Use the existing container name as the hostname
+#       - DB_PORT=5432
+#       - DB_NAME=vector_db
+#       - DB_USER=postgres
+#       - DB_PASSWORD=test
+#     volumes:
+#       - .:/app
+#     networks:
+#       - pgvector_network  # Use the new custom network
+
+# networks:
+#   pgvector_network:
+#     external: true  # Use the existing network created earlier
+
+
+
+# # working with runningg the container
+# # services:
+# #   rag_app:
+# #     build: .
+# #     container_name: rag_app
+# #     environment:
+# #       - DB_HOST=pgvector_demo_local  # Use the existing PostgreSQL container name
+# #       - DB_NAME=${DB_NAME}
+# #       - DB_USER=${DB_USER}
+# #       - DB_PASSWORD=${DB_PASSWORD}
+# #       - DB_PORT=${DB_PORT}
+# #       - GROQ_API_KEY=${GROQ_API_KEY}
+# #     ports:
+# #       - "8501:8501"
+# #     networks:
+# #       - rag_network
+
+# # networks:
+# #   rag_network:
+# #     external: true  # Use the external network
+
+# # services:
+# #   rag_app:
+# #     build: .
+# #     container_name: rag_app
+# #     environment:
+# #       - DB_HOST=pgvector_demo_local  # Use the existing PostgreSQL container name
+# #       - DB_NAME=${DB_NAME}
+# #       - DB_USER=${DB_USER}
+# #       - DB_PASSWORD=${DB_PASSWORD}
+# #       - DB_PORT=${DB_PORT}
+# #       - GROQ_API_KEY=${GROQ_API_KEY}
+# #     ports:
+# #       - "8501:8501"
+# #     networks:
+# #       - rag_network
+
+# # networks:
+# #   rag_network:
+# #     driver: bridge
+
+# # version: '3.8'
+
+# # services:
+# #   rag_app:
+# #     build: .
+# #     container_name: rag_app
+# #     environment:
+# #       - DB_HOST=pgvector_demo_local  # Use the existing PostgreSQL container name
+# #       - DB_NAME=${DB_NAME}
+# #       - DB_USER=${DB_USER}
+# #       - DB_PASSWORD=${DB_PASSWORD}
+# #       - DB_PORT=${DB_PORT}
+# #       - GROQ_API_KEY=${GROQ_API_KEY}
+# #     ports:
+# #       - "8501:8501"
+# #     depends_on:
+# #       - pgvector_demo_local  # Ensure the PostgreSQL container is running
+# #     networks:
+# #       - rag_network
+
+# #   pgvector_demo_local:
+# #     image: ankane/pgvector
+# #     container_name: pgvector_demo_local
+# #     environment:
+# #       POSTGRES_USER: postgres
+# #       POSTGRES_PASSWORD: test
+# #       POSTGRES_DB: vector_db
+# #     ports:
+# #       - "5432:5432"
+# #     volumes:
+# #       - pgvector_data:/var/lib/postgresql/data
+# #     networks:
+# #       - rag_network
+
+# # volumes:
+# #   pgvector_data:
+
+# # networks:
+# #   rag_network:
+# #     driver: bridge
+
+
+# version: '3.8'
+
+# services:
+#   pgvector_demo_local:
+#     image: ankane/pgvector
+#     container_name: pgvector_demo_local
+#     environment:
+#       POSTGRES_USER: postgres
+#       POSTGRES_PASSWORD: test
+#       POSTGRES_DB: vector_db
+#     ports:
+#       - "5432:5432"
+#     volumes:
+#       - pgvector_data:/var/lib/postgresql/data
+#       - ./initdb:/docker-entrypoint-initdb.d  # Mount initialization scripts
+#       - ./vector_db.sql:/docker-entrypoint-initdb.d/02_restore_dump.sql  # Restore the dump
+#     networks:
+#       - rag_network
+
+#   rag_app:
+#     build: .
+#     container_name: rag_app
+#     environment:
+#       - DB_HOST=pgvector_demo_local  # Use the PostgreSQL container name
+#       - DB_NAME=${DB_NAME}
+#       - DB_USER=${DB_USER}
+#       - DB_PASSWORD=${DB_PASSWORD}
+#       - DB_PORT=${DB_PORT}
+#       - GROQ_API_KEY=${GROQ_API_KEY}
+#     ports:
+#       - "8501:8501"
+#     depends_on:
+#       - pgvector_demo_local  # Ensure the PostgreSQL container starts first
+#     networks:
+#       - rag_network
+
+# volumes:
+#   pgvector_data:
+
+# networks:
+#   rag_network:
+#     driver: bridge
+
+version: '3.8'
+
+services:
+  pgvector_demo_local:
+    image: ankane/pgvector
+    container_name: pgvector_demo_local
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: test
+      POSTGRES_DB: vector_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgvector_data:/var/lib/postgresql/data
+      - ./initdb:/docker-entrypoint-initdb.d  # Mount initialization scripts
+    networks:
+      - rag_network
+
+  rag_app:
+    build: .
+    container_name: rag_app
+    environment:
+      - DB_HOST=pgvector_demo_local  # Use the PostgreSQL container name
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_PORT=${DB_PORT}
+      - GROQ_API_KEY=${GROQ_API_KEY}
+    ports:
+      - "8501:8501"
+    depends_on:
+      - pgvector_demo_local  # Ensure the PostgreSQL container starts first
+    networks:
+      - rag_network
+
+volumes:
+  pgvector_data:
+
+networks:
+  rag_network:
+    driver: bridge
