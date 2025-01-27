@@ -101,19 +101,31 @@ def query_vector_store(query, db_config, top_k=2, model_name="all-MiniLM-L6-v2")
 def generate_answer_with_groq(query, retrieved_texts, groq_api_key):
     client = Groq(api_key=groq_api_key)
 
+        #     f"The following texts were retrieved as context:\n\n"
+    #     f"{retrieved_texts}\n\n"
+    #     f"Based on the context, answer the query:\n\n"
+    #     f"{query}"
+    #     f"Some rules to follow:\n"
+    #     f"Avoid statements like 'Based on the context, ...' or 'The context information ...' or anything along those lines.\n"
+    #     f"Never try to add information from yourself always adhere to the provided context information. Avoid to add hallucinations, stay true to the context.\n"
+    # )
+    
     prompt = (
         f"The following texts were retrieved as context:\n\n"
         f"{retrieved_texts}\n\n"
-        f"Based on the context, answer the query:\n\n"
-        f"{query}"
-        f"Some rules to follow:\n"
-        f"Avoid statements like 'Based on the context, ...' or 'The context information ...' or anything along those lines.\n"
-        f"Never try to add information from yourself always adhere to the provided context information. Avoid to add hallucinations, stay true to the context.\n"
+        f"Based on the context, provide a concise and actionable answer to the query:\n\n"
+        f"{query}\n\n"
+        f"Rules to follow:\n"
+        f"1. Avoid copying text verbatim from the context.\n"
+        f"2. Do not include statements like 'Based on the context' or 'The context information'.\n"
+        f"3. Structure the response with clear headings whenever possible(e.g., '1. Immediate Actions', '2. Investigations', etc.).\n"
+        f"4. Use bullet points for clarity and readability.\n"
+        f"5. Never try to add information from yourself always adhere to the provided context information. Avoid to add hallucinations, stay true to the context.\n"
     )
     
     response = client.chat.completions.create(
         messages=[{"role": "user", "content": prompt}],
-        max_tokens=500,
+        max_tokens=1024,
         temperature=0.1,
         model="llama-3.1-8b-instant",
     )
@@ -127,7 +139,7 @@ def main():
 
     if 'history' not in st.session_state:
         st.session_state.history = []
-    query = st.text_input("Enter your query to get assistance:")
+    query = st.text_area("Enter your query to get assistance:", height=150)
     if st.button("Submit"):
         if query:
             query_result = classify_query(query, groq_api_key)
