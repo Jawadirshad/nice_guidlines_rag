@@ -9,3 +9,8 @@ python-dotenv
 psycopg2-binary
 pgvector
 opik
+langgraph
+tiktoken
+uvicorn
+pydantic
+fastapi
