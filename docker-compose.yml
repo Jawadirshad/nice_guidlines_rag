@@ -1,0 +1,42 @@
+# docker-compose.yml
+
+version: '3.8'
+
+services:
+  # Backend (Python)
+  backend:
+    build:
+      context: .
+      dockerfile: server/Dockerfile
+    container_name: python-backend
+    ports:
+      - "8000:8000"
+    env_file:
+      - server/.env  # Load environment variables for the backend
+    volumes:
+      - ./server:/app  # Mount server directory to container for development
+    networks:
+      - app-network
+
+  # Frontend (React)
+  frontend:
+    build:
+      context: .
+      dockerfile: client/Dockerfile
+    container_name: react-frontend
+    ports:
+      - "80:80"
+    env_file:
+      - client/.env  # Load environment variables for the frontend
+    volumes:
+      - ./client:/app  # Mount client directory to container for development
+    networks:
+      - app-network
+    depends_on:
+      - backend  # Wait for backend to be ready before starting frontend
+
+
+
+networks:
+  app-network:
+    driver: bridge
